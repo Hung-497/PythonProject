@@ -8,6 +8,5 @@ def show_intro():
     print(f)
     lprint(length=180, height=1, char="*")
     print(Style.RESET_ALL, end=' ')
-show_intro()
 
 
