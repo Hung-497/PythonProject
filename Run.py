@@ -1,4 +1,4 @@
-from game import run_cli
+from GameProject import run_cli
 
 def main():
     db_conf = dict(

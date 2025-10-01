@@ -67,7 +67,8 @@ class FlightGame:
         self.cur = dest_ident
         self.visited.add(dest_ident)
 
-        msg = f"You are now at {dest_ident} - {self.airports[dest_ident]['name']}"
+        r = self.airports[dest_ident]
+        msg = f"You are now at {self.fmt(dest_ident)}"
         # Reveal code if present & not yet collected
         if dest_ident in self.code_positions and dest_ident not in self.found_idents:
             art = self.code_positions[dest_ident]
@@ -80,13 +81,16 @@ class FlightGame:
     def is_win(self):
         return len(self.found_idents) == 5
 
+    def fmt(self, ident: str) -> str:
+        row = self.airports[ident]
+        return f"{ident} - {row['name']} - {row.get('municipality') or ''}"
 # ---- CLI runner ----
 
 def run_cli(db_conf):
     from Intro import show_intro
     show_intro()
     g = FlightGame(db_conf)
-    print(f"You are now at {g.start}")
+    print(f"You are now at {g.fmt(g.start)}")
     print("Commands: list (show *unvisited* airports), go <IDENT>, quit")
 
     while not g.is_win():
