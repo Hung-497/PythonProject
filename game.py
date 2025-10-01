@@ -1,12 +1,14 @@
-import random
 import mysql.connector
+import random
 connection = mysql.connector.connect(
          host='127.0.0.1',
          port= 3306,
          database='demogame',
          user='root',
-         password='Toikobiet123',
-         autocommit=True
+         password='Giahung@!497',
+         autocommit=True,
+         auth_plugin="mysql_native_password",
+         use_pure=True
 )
 
 def get_airports_30(db_conf):
@@ -15,11 +17,10 @@ def get_airports_30(db_conf):
     cur = con.cursor(dictionary=True)
     cur.execute(
         """
-        SELECT ident, name, iso_country, latitude_deg, longitude_deg
+        SELECT ident, name, municipality
         FROM airport
-        WHERE type <> 'closed'
-          AND latitude_deg IS NOT NULL
-          AND longitude_deg IS NOT NULL
+        WHERE type = 'large_airport'
+          AND continent = 'EU'
         ORDER BY RAND()
         LIMIT 30
         """
@@ -85,7 +86,7 @@ def run_cli(db_conf):
     from Intro import show_intro
     show_intro()
     g = FlightGame(db_conf)
-    print(f"Spawned at: {g.start}")
+    print(f"You are now at {g.start}")
     print("Commands: list (show *unvisited* airports), go <IDENT>, quit")
 
     while not g.is_win():
@@ -98,7 +99,7 @@ def run_cli(db_conf):
             remaining = [i for i in g.idents if i not in g.visited]
             count = len(remaining)
             if count > 0:
-                print(f"{count} airports remaining:")
+                print(f"You only have {count} airports remaining:")
                 print(", ".join(sorted(remaining)))
             else:
                 print("(No more unvisited airports)")
@@ -111,3 +112,4 @@ def run_cli(db_conf):
     if g.is_win():
         print(">>> WIN! You found all 5 codes. <<<")
         print(f'U have visited{g.visited}')
+
