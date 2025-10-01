@@ -1,8 +1,6 @@
 import mysql.connector
 import random
 
-from game import get_airports_30
-
 connection = mysql.connector.connect(
          host='127.0.0.1',
          port= 3306,
