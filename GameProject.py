@@ -36,9 +36,6 @@ def ascii_art(db_conf): #pick 5 ascii art from goals (ordered by id for determin
     con.close()
     return arts
 
-def remain(db_conf):
-    sql = """select """
-
 # ---- Core game ----
 
 def start_game(db_conf):
@@ -135,12 +132,14 @@ def run_cli(db_conf):
         else:
             print("Invalid command.")
     if is_win(g):
-        print(">>> WIN! You found all 5 codes. <<<")
+        from Goodend import show_good_end
+        show_good_end()
         print("U have visited:")
         for ident in sorted(g["visited"]):
             print("  " + fmt(g, ident))
     elif g["attempts_left"] <= 0:
-        print(">>> GAME OVER! You ran out of attempts! <<<")
+        from Badend import show_bad_end
+        show_bad_end()
     else:
         print(">>> GAME ENDED! <<<")
 
