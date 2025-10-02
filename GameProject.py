@@ -99,16 +99,18 @@ def run_cli(db_conf):
     show_intro()
     g = start_game(db_conf) # The core game
     start_ident = g["start"]
-    print("Our Milky Way contains a database of humankind's knowledge and its very existence. But humanity now faces adversity from an evil called ‘Red Death’, which is in its evil mission to eliminate humankind. \nThe intelligence agencies of the world get a tip-off that the world has 21 days before ‘Red Death’ succeeds in its evil mission. But humanity could be saved, and there is always a greater good that \nfaces the evil. There are 5 codes hidden around the large airports in the EU, which will save our world if all are found and decrypted. Since there is anarchy and governments don't trust each other, \nthey won't cooperate. Here comes our Hero, you, a spy belonging to an unofficial ‘One World’ Spy agency, who takes it upon themselves to save the world. They chose you and entrusted you to\nsave our world.")
+    name = input("Type the player name: ").upper()
+    input("\n\033[32mPress Enter to start the game...\033[0m")
+    print(f"Our Milky Way contains a database of humankind's knowledge and its very existence. But humanity now faces adversity from an evil called ‘Red Death’, which is in its evil mission to eliminate humankind. \nThe intelligence agencies of the world get a tip-off that the world has 21 days before ‘Red Death’ succeeds in its evil mission. But humanity could be saved, and there is always a greater good that \nfaces the evil. There are 5 codes hidden around the large airports in the EU, which will save our world if all are found and decrypted. Since there is anarchy and governments don't trust each other, \nthey won't cooperate. Here you are our Hero, {name}, a spy belonging to a secret Spy agency under the government named 'IPM', who takes it upon themselves to save the world. They chose you and \nentrusted you to save our world.")
     input("\n\033[32mPress Enter to accept the mission...\033[0m")
-    print(f"You now are at {fmt(g, start_ident)}")
+    print(f"{name}. You now are at {fmt(g, start_ident)}")
     print("Commands: list (show airports) | go <IDENT> | quit")
 
     # Main loop
     while not is_win(g) and g["attempts_left"] > 0:
         cur_ident = g["cur"]
         print(f"Codes found: {len(g['found'])}/5 | Days left: {g["attempts_left"]}/{g["max_attempts"]} | Current location: {fmt(g, cur_ident)}")
-        cmd = input("Choose your next location: ").strip().upper().split()
+        cmd = input("Choose your next destination: ").strip().upper().split()
         if not cmd:
             continue
 
@@ -137,7 +139,7 @@ def run_cli(db_conf):
     if is_win(g):
         from Goodend import show_good_end
         show_good_end()
-        print("U have visited:")
+        print("You have visited:")
         for ident in sorted(g["visited"]):
             print("  " + fmt(g, ident))
     elif g["attempts_left"] <= 0:
