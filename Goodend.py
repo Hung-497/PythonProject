@@ -7,5 +7,6 @@ def show_good_end():
     lprint(length=250, height=1, char="*")
     banner = Figlet(font='ansi_shadow', width=200, justify='center').renderText(">>> Game Win! <<<")
     print(banner)
+    print('You rescued millions and safeguarded the world. We’re forever grateful, our hero.')
     lprint(length=250, height=1, char="*")
     print(Style.RESET_ALL, end='')

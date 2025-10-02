@@ -7,5 +7,6 @@ def show_bad_end():
     lprint(length=250, height=1, char="*")
     banner = Figlet(font='ansi_shadow', width=200, justify='center').renderText(">>> Game Over! <<<")
     print(banner)
+    print('Unfortunately, the clock expired and Red Death prevailed.')
     lprint(length=250, height=1, char="*")
     print(Style.RESET_ALL, end='')

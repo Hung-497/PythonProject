@@ -79,6 +79,7 @@ def move(game, dest_ident):
     # Reveal code if present and not already found
     if dest_ident in game["code_positions"] and dest_ident not in game["found"]:
        art = game["code_positions"][dest_ident]
+       print(f"The computers in {game["airports"][dest_ident]["name"]} completely read the code. It is decrypted and gradually destroyed a part of 'Red Death'. Keep Fighting!!")
        msg += f" | >>> CODE FOUND: {art['name']} ({len(game['found']) +1}/5) <<<\n"
        msg += (art["code"] or "")
        game["found"].add(dest_ident)
@@ -98,14 +99,16 @@ def run_cli(db_conf):
     show_intro()
     g = start_game(db_conf) # The core game
     start_ident = g["start"]
+    print("Our Milky Way contains a database of humankind's knowledge and its very existence. But humanity now faces adversity from an evil called ‘Red Death’, which is in its evil mission to eliminate humankind. \nThe intelligence agencies of the world get a tip-off that the world has 21 days before ‘Red Death’ succeeds in its evil mission. But humanity could be saved, and there is always a greater good that \nfaces the evil. There are 5 codes hidden around the large airports in the EU, which will save our world if all are found and decrypted. Since there is anarchy and governments don't trust each other, \nthey won't cooperate. Here comes our Hero, you, a spy belonging to an unofficial ‘One World’ Spy agency, who takes it upon themselves to save the world. They chose you and entrusted you to\nsave our world.")
+    input("\n\033[32mPress Enter to accept the mission...\033[0m")
     print(f"You now are at {fmt(g, start_ident)}")
     print("Commands: list (show airports) | go <IDENT> | quit")
 
     # Main loop
     while not is_win(g) and g["attempts_left"] > 0:
         cur_ident = g["cur"]
-        print(f"Codes found: {len(g['found'])}/5 | Attempts left: {g["attempts_left"]}/{g["max_attempts"]} | Current location: {fmt(g, cur_ident)}")
-        cmd = input("Where do you want to go? \nType there: ").strip().upper().split()
+        print(f"Codes found: {len(g['found'])}/5 | Days left: {g["attempts_left"]}/{g["max_attempts"]} | Current location: {fmt(g, cur_ident)}")
+        cmd = input("Choose your next location: ").strip().upper().split()
         if not cmd:
             continue
 
