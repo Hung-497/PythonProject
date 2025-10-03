@@ -104,7 +104,7 @@ def run_cli(db_conf):   # interface loop
     start_ident = g["start"]
     name = input("Type the player name: ").upper()
     input("\n\033[32mPress Enter to start the game...\033[0m")
-    print(f"Our Milky Way contains a database of humankind's knowledge and its very existence. But humanity now faces adversity from an evil called ‘Red Death’, which is in its evil mission to eliminate humankind. \nThe intelligence agencies of the world get a tip-off that the world has 21 days before ‘Red Death’ succeeds in its evil mission. But humanity could be saved, and there is always a greater good that \nfaces the evil. There are 5 codes hidden around the large airports in the EU, which will save our world if all are found and decrypted. Since there is anarchy and governments don't trust each other, \nthey won't cooperate. Here you are our Hero, {name}, a spy belonging to a secret Spy agency under the government named 'IPM', who takes it upon themselves to save the world. They chose you and \nentrusted you to save our world.")
+    print(f"The world is falling apart, piece by piece. A strange new “red hole” has opened somewhere out in the cosmos, quietly erasing the code that holds reality together. \nLanguages grow simpler, memories fade, and entire systems vanish overnight. Nobody knows how to stop it. But somehow, {name}, you’ve woken up in the middle of it all—with nothing but a letter, a few cryptic clues, and hints that might lead to the last surviving computers. If there’s any hope left, it’s you.")
     input("\n\033[32mPress Enter to accept the mission...\033[0m")
     print(f"{name}. You now are at {fmt(g, start_ident)}")
     print("Commands: list (show airports) | go <IDENT> | quit")
