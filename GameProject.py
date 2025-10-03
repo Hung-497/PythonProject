@@ -14,6 +14,8 @@ connection = mysql.connector.connect(
          use_pure=True
 )
 
+## this is a function for defining random airports in r rows
+
 def get_airport(db_conf): #random 30 airports for the game
     sql = """SELECT ident, name, municipality
              FROM airport
