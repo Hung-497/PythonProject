@@ -1,4 +1,6 @@
 import mysql.connector
+import sys, time
+sys.stdout.reconfigure(line_buffering=True)
 import random
 
 connection = mysql.connector.connect(
@@ -6,7 +8,7 @@ connection = mysql.connector.connect(
          port= 3306,
          database='demogame',
          user='root',
-         password='Giahung@!497',
+         password='maria',
          autocommit=True,
          auth_plugin="mysql_native_password",
          use_pure=True
@@ -19,7 +21,7 @@ def get_airport(db_conf): #random 30 airports for the game
                AND type = 'large_airport'
              ORDER by RAND() LIMIT 30;"""
     con = mysql.connector.connect(**db_conf)
-    cur = con.cursor(dictionary=True)   # each row is a dict
+    cur = con.cursor(dictionary=True)
     cur.execute(sql)
     rows = cur.fetchall()
     cur.close()
@@ -47,7 +49,6 @@ def start_game(db_conf):
     # Choose 5 code spots
     arts = ascii_art(db_conf)
     random.shuffle(idents) #shuffle all the codes in 30 airports
-
     code_positions = {}
     for ident, art in zip(idents[:5], arts):
         code_positions[ident] = art
@@ -55,14 +56,14 @@ def start_game(db_conf):
     # Player state
     start = random.choice(idents)   #Pick a random airport to spawn
     game = {
-        "airports": airport,                # dict: ident -> row {'ident','name','municipality'}
-        "idents": idents,                   # list of the 30 idents, shuffled
-        "code_positions": code_positions,   # dict: ident -> {'name','code'}  (5 entries)
-        "start": start,                     # starting ident
-        "cur":start,                        # starting ident
-        "found": set(),                     # idents where a code was found
-        "visited": {start},                 # idents the player has visited
-        "attempts_left": 21,                # moves remaining
+        "airports": airport,
+        "idents": idents,
+        "code_positions": code_positions,
+        "start": start,
+        "cur":start,
+        "found": set(),
+        "visited": {start},
+        "attempts_left": 21,
         "max_attempts": 21
     }
     return game
@@ -72,39 +73,41 @@ def move(game, dest_ident):
     if dest_ident == game["cur"]:
         return "You are already at that airport." # for duplicate ident
 
-    game["attempts_left"] -= 1        # consume 1 attempt for 1 move
-    game["cur"] = dest_ident          # update posi
-    game["visited"].add(dest_ident)   # mark visited location
+    game["attempts_left"] -= 1 # consume 1 attempt for 1 move
+    game["cur"] = dest_ident
+    game["visited"].add(dest_ident)
 
     msg = f"You are now at {dest_ident} - {game["airports"][dest_ident]["name"]} - {game["airports"][dest_ident]["municipality"] or ''}"
     # Reveal code if present and not already found
     if dest_ident in game["code_positions"] and dest_ident not in game["found"]:
        art = game["code_positions"][dest_ident]
-       print(f"Congratulation, the computers in {game["airports"][dest_ident]["name"]} completely read the code. It is decrypted and gradually destroyed a part of 'Red Death'. Keep Fighting!!")
+       print(f"The computers in {game["airports"][dest_ident]["name"]} completely read the code. It is decrypted and gradually destroyed a part of 'Red Death'. Keep Fighting!!")
        msg += f" | >>> CODE FOUND: {art['name']} ({len(game['found']) +1}/5) <<<\n"
        msg += (art["code"] or "")
        game["found"].add(dest_ident)
-    else:
-        print(f"Unfortunately, the computers in {game["airports"][dest_ident]["name"]} are broken. Go to the next destination.")
     return msg
 
-def is_win(game):   # win condition
+def is_win(game):
     return len(game["found"]) == 5
 
-def fmt(game, ident):   # show clearly ident - name - muni
+def fmt(game, ident):
     row = game["airports"][ident]
     mini = row.get("municipality") or ""
     return f"{ident} - {row['name']} - {mini}"
 
 # ---- CLI runner ----
-def run_cli(db_conf):   # interface loop
+def run_cli(db_conf):
     from Intro import show_intro
     show_intro()
     g = start_game(db_conf) # The core game
     start_ident = g["start"]
     name = input("Type the player name: ").upper()
     input("\n\033[32mPress Enter to start the game...\033[0m")
-    print(f"The world is falling apart, piece by piece. A strange new “red hole” has opened somewhere out in the cosmos, quietly erasing the code that holds reality together. \nLanguages grow simpler, memories fade, and entire systems vanish overnight. Nobody knows how to stop it. But somehow, {name}, you’ve woken up in the middle of it all—with nothing but a letter, a few cryptic clues, and hints that might lead to the last surviving computers. If there’s any hope left, it’s you.")
+    print("The world is falling apart, piece by piece.")
+    print("A strange new 'red hole' has opened somewhere out in the cosmos, quietly erasing the code that holds reality together.")
+    print("Languages grow simpler, memories fade, and entire systems vanish overnight. Nobody knows how to stop it.")
+    print(f"But somehow, {name}, you’ve woken up in the middle of it all—with nothing but a letter, a few cryptic clues, and a map that might lead to the last surviving computers.")
+    print("If there’s any hope left, the hope is you.")
     input("\n\033[32mPress Enter to accept the mission...\033[0m")
     print(f"{name}. You now are at {fmt(g, start_ident)}")
     print("Commands: list (show airports) | go <IDENT> | quit")
@@ -129,7 +132,7 @@ def run_cli(db_conf):   # interface loop
 
             if count > 0:
                 print(f"You only have {count} airports remaining:")
-                for ident in sorted(remaining): # show ident - name - muni
+                for ident in sorted(remaining): # show IDENT – NAME – MUNICIPALITY one per line
                     print("  " + fmt(g, ident))
             else:
                 print("(No more unvisited airports)")
