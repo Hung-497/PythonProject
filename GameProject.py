@@ -19,7 +19,7 @@ def get_airport(db_conf): #random 30 airports for the game
                AND type = 'large_airport'
              ORDER by RAND() LIMIT 30;"""
     con = mysql.connector.connect(**db_conf)
-    cur = con.cursor(dictionary=True)
+    cur = con.cursor(dictionary=True)   # each row is a dict
     cur.execute(sql)
     rows = cur.fetchall()
     cur.close()
@@ -47,6 +47,7 @@ def start_game(db_conf):
     # Choose 5 code spots
     arts = ascii_art(db_conf)
     random.shuffle(idents) #shuffle all the codes in 30 airports
+
     code_positions = {}
     for ident, art in zip(idents[:5], arts):
         code_positions[ident] = art
@@ -54,14 +55,14 @@ def start_game(db_conf):
     # Player state
     start = random.choice(idents)   #Pick a random airport to spawn
     game = {
-        "airports": airport,
-        "idents": idents,
-        "code_positions": code_positions,
-        "start": start,
-        "cur":start,
-        "found": set(),
-        "visited": {start},
-        "attempts_left": 21,
+        "airports": airport,                # dict: ident -> row {'ident','name','municipality'}
+        "idents": idents,                   # list of the 30 idents, shuffled
+        "code_positions": code_positions,   # dict: ident -> {'name','code'}  (5 entries)
+        "start": start,                     # starting ident
+        "cur":start,                        # starting ident
+        "found": set(),                     # idents where a code was found
+        "visited": {start},                 # idents the player has visited
+        "attempts_left": 21,                # moves remaining
         "max_attempts": 21
     }
     return game
@@ -71,30 +72,32 @@ def move(game, dest_ident):
     if dest_ident == game["cur"]:
         return "You are already at that airport." # for duplicate ident
 
-    game["attempts_left"] -= 1 # consume 1 attempt for 1 move
-    game["cur"] = dest_ident
-    game["visited"].add(dest_ident)
+    game["attempts_left"] -= 1        # consume 1 attempt for 1 move
+    game["cur"] = dest_ident          # update posi
+    game["visited"].add(dest_ident)   # mark visited location
 
     msg = f"You are now at {dest_ident} - {game["airports"][dest_ident]["name"]} - {game["airports"][dest_ident]["municipality"] or ''}"
     # Reveal code if present and not already found
     if dest_ident in game["code_positions"] and dest_ident not in game["found"]:
        art = game["code_positions"][dest_ident]
-       print(f"The computers in {game["airports"][dest_ident]["name"]} completely read the code. It is decrypted and gradually destroyed a part of 'Red Death'. Keep Fighting!!")
+       print(f"Congratulation, the computers in {game["airports"][dest_ident]["name"]} completely read the code. It is decrypted and gradually destroyed a part of 'Red Death'. Keep Fighting!!")
        msg += f" | >>> CODE FOUND: {art['name']} ({len(game['found']) +1}/5) <<<\n"
        msg += (art["code"] or "")
        game["found"].add(dest_ident)
+    else:
+        print(f"Unfortunately, the computers in {game["airports"][dest_ident]["name"]} are broken. Go to the next destination.")
     return msg
 
-def is_win(game):
+def is_win(game):   # win condition
     return len(game["found"]) == 5
 
-def fmt(game, ident):
+def fmt(game, ident):   # show clearly ident - name - muni
     row = game["airports"][ident]
     mini = row.get("municipality") or ""
     return f"{ident} - {row['name']} - {mini}"
 
 # ---- CLI runner ----
-def run_cli(db_conf):
+def run_cli(db_conf):   # interface loop
     from Intro import show_intro
     show_intro()
     g = start_game(db_conf) # The core game
@@ -126,7 +129,7 @@ def run_cli(db_conf):
 
             if count > 0:
                 print(f"You only have {count} airports remaining:")
-                for ident in sorted(remaining): # show IDENT – NAME – MUNICIPALITY one per line
+                for ident in sorted(remaining): # show ident - name - muni
                     print("  " + fmt(g, ident))
             else:
                 print("(No more unvisited airports)")
