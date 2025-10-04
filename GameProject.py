@@ -11,7 +11,6 @@ connection = mysql.connector.connect(
          auth_plugin="mysql_native_password",
          use_pure=True
 )
-## this is a function for defining random airports in r rows
 
 ## this is a function for defining random airports in r rows
 
