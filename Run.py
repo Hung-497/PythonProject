@@ -6,7 +6,7 @@ def main():
     port=3306,
     database='demogame',
     user='root',
-    password='maria',
+    password='Giahung@!497',
     autocommit=True,
     auth_plugin="mysql_native_password",
     use_pure=True

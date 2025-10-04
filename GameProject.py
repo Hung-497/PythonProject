@@ -1,6 +1,4 @@
 import mysql.connector
-import sys, time
-sys.stdout.reconfigure(line_buffering=True)
 import random
 
 connection = mysql.connector.connect(
@@ -8,11 +6,12 @@ connection = mysql.connector.connect(
          port= 3306,
          database='demogame',
          user='root',
-         password='maria',
+         password='Giahung@!497',
          autocommit=True,
          auth_plugin="mysql_native_password",
          use_pure=True
 )
+## this is a function for defining random airports in r rows
 
 def get_airport(db_conf): #random 30 airports for the game
     sql = """SELECT ident, name, municipality
@@ -81,10 +80,12 @@ def move(game, dest_ident):
     # Reveal code if present and not already found
     if dest_ident in game["code_positions"] and dest_ident not in game["found"]:
        art = game["code_positions"][dest_ident]
-       print(f"The computers in {game["airports"][dest_ident]["name"]} completely read the code. It is decrypted and gradually destroyed a part of 'Red Death'. Keep Fighting!!")
+       print(f"The computers in {game["airports"][dest_ident]["name"]} completely read the code. It is decrypted and gradually destroyed a part of 'Red Hole'. Keep Fighting!!")
        msg += f" | >>> CODE FOUND: {art['name']} ({len(game['found']) +1}/5) <<<\n"
        msg += (art["code"] or "")
        game["found"].add(dest_ident)
+    else:
+        print(f"The computers in {game["airports"][dest_ident]["name"]} are broken. Go to the next destination.")
     return msg
 
 def is_win(game):
@@ -104,7 +105,7 @@ def run_cli(db_conf):
     name = input("Type the player name: ").upper()
     input("\n\033[32mPress Enter to start the game...\033[0m")
     print("The world is falling apart, piece by piece.")
-    print("A strange new 'red hole' has opened somewhere out in the cosmos, quietly erasing the code that holds reality together.")
+    print("A strange new 'Red Hole' has opened somewhere out in the cosmos, quietly erasing the code that holds reality together.")
     print("Languages grow simpler, memories fade, and entire systems vanish overnight. Nobody knows how to stop it.")
     print(f"But somehow, {name}, you’ve woken up in the middle of it all—with nothing but a letter, a few cryptic clues, and a map that might lead to the last surviving computers.")
     print("If there’s any hope left, the hope is you.")
