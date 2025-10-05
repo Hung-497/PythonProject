@@ -103,7 +103,7 @@ def run_cli(db_conf):
     show_intro()
     g = start_game(db_conf) # The core game
     start_ident = g["start"]
-    name = input("Type the player name: ").upper()
+    name = input("Type the player name: ").capitalize()
     input("\n\033[32mPress Enter to start the game...\033[0m")
     print("The world is falling apart, piece by piece.")
     print("A strange new 'Red Hole' has opened somewhere out in the cosmos, quietly erasing the code that holds reality together.")
@@ -118,7 +118,7 @@ def run_cli(db_conf):
     while not is_win(g) and g["attempts_left"] > 0:
         cur_ident = g["cur"]
         print(f"Codes found: {len(g['found'])}/5 | Days left: {g["attempts_left"]}/{g["max_attempts"]} | Current location: {fmt(g, cur_ident)}")
-        cmd = input("Choose your next destination: ").strip().l().split()
+        cmd = input("Choose your next destination: ").strip().upper().split()
         if not cmd:
             continue
 
