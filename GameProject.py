@@ -178,7 +178,7 @@ def fmt(game, ident):
 def run_cli(db_conf):
     from Intro import show_intro
     show_intro()
-    g = start_game(db_conf) # The core game
+    g = start_game(db_conf) # The core gam
     g = start_game(db_conf)  # The core game
     start_ident = g["start"]  # Now start_ident exists
 
