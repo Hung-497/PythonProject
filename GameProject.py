@@ -118,7 +118,7 @@ def run_cli(db_conf):
     while not is_win(g) and g["attempts_left"] > 0:
         cur_ident = g["cur"]
         print(f"Codes found: {len(g['found'])}/5 | Days left: {g["attempts_left"]}/{g["max_attempts"]} | Current location: {fmt(g, cur_ident)}")
-        cmd = input("Choose your next destination: ").strip().upper().split()
+        cmd = input("Choose your next destination: ").strip().l().split()
         if not cmd:
             continue
 
