@@ -114,7 +114,7 @@ def move(game, dest_ident):
 
         # If all letter parts are found
     if len(game["found"]) == len(FIXED_CODE_AIRPORTS):
-        msg += "\n\n>>> The letter is now complete! <<<"
+        msg += "\n>>> The letter is now complete! <<<\n"
     return msg
 
 def is_win(game):
