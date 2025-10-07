@@ -26,7 +26,7 @@ FIXED_HINTS = {
 
 letter_parts = {
     "LIRF": "You have a great chance to save the world.",
-    "GCTS": "Do what you can.",
+    "GCTS": "Do what you can!.",
     "LFPG": "There are still computers left, scattered around the EU that can help you",
     "EHEH": "to remember who you are.",
     "DDDF": "But don’t get too excited, since I tricked you; the secret base, the key, my password - remember?",
