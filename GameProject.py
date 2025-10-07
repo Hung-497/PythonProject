@@ -26,7 +26,7 @@ connection = mysql.connector.connect(
          port= 3306,
          database='demogame',
          user='root',
-         password='maria',
+         password='Giahung@!497',
          autocommit=True,
          auth_plugin="mysql_native_password",
          use_pure=True
@@ -48,20 +48,6 @@ def get_airport(db_conf): #random 30 airports for the game
     con.close()
     return {r["ident"]: r for r in rows}
 
-"""
-def ascii_art(db_conf): #pick 5 ascii art from goals (ordered by id for determinism)
-    sql = ""select name, code from goals order by id limit 5 ""
-    con = mysql.connector.connect(**db_conf)
-    cur = con.cursor(dictionary=True)
-    cur.execute(sql)
-    arts = cur.fetchall()
-    cur.close()
-    con.close()
-    return arts
-"""
-
-code_positions = {icao: FIXED_HINTS.get(icao, "") for icao in FIXED_CODE_AIRPORTS}
-
 # ---- Core game ----
 
 def start_game(db_conf):
@@ -79,18 +65,6 @@ def start_game(db_conf):
         "EHEH": "Eindhoven",
         "DDDF": "Frankfurt"
     }
-
-    # Ensure fixed airports are included
-    for icao in FIXED_CODE_AIRPORTS:
-        if icao not in airport:
-            airport[icao] = {
-                "ident": icao,
-                "name": f"Special Airport {icao}",
-                "municipality": fixed_municipalities.get(icao, "")
-            }
-        else:
-            airport[icao]["municipality"] = fixed_municipalities.get(icao, "")
-
     idents = list(airport.keys()) #return a view of all the keys in the dict
 
     # Ensure fixed airports are included
@@ -99,7 +73,7 @@ def start_game(db_conf):
             airport[icao] = {"ident": icao, "name": f"Special Airport {icao}", "municipality": ""}
 
     # Player state
-    start = "LIRF"  #Fixed starting point
+    start = random.choice(idents)
     game = {
         "airports": airport,
         "idents": idents,
@@ -132,7 +106,6 @@ def move(game, dest_ident):
     if dest_ident == game["cur"]:
         return "You are already at that airport."
     show_letter_so_far(game)
-
     game["attempts_left"] -= 1
     game["cur"] = dest_ident
     game["visited"].add(dest_ident)
@@ -143,7 +116,6 @@ def move(game, dest_ident):
     if dest_ident in letter_parts and dest_ident not in game["found"]:
         part = letter_parts[dest_ident]
         msg += f"\n\n>>> Letter fragment discovered:\n\"{part}\" <<<"
-
         hint = game["code_positions"].get(dest_ident, "")
         if hint:
             msg += f"\n\n>>> A computer flickers and shows a clue:\n\"{hint}\" <<<"
@@ -153,16 +125,7 @@ def move(game, dest_ident):
         # If all letter parts are found
     if len(game["found"]) == len(FIXED_CODE_AIRPORTS):
         msg += "\n\n>>> The letter is now complete! <<<"
-
     return msg
-
-        # Hints
-    def make_hints(idents):
-        hints = {}
-        for ident in idents:
-            hints[ident] = f""
-        return hints
-
 
 def is_win(game):
     return len(game["found"]) == len(FIXED_CODE_AIRPORTS)
@@ -178,18 +141,16 @@ def fmt(game, ident):
 def run_cli(db_conf):
     from Intro import show_intro
     show_intro()
-    g = start_game(db_conf) # The core gam
     g = start_game(db_conf)  # The core game
     start_ident = g["start"]  # Now start_ident exists
-
-    name = input("Type the player name: ").upper()
+    name = input("Type the player name: ").capitalize()
     input("\n\033[32mPress Enter to start the game...\033[0m")
     print("The world is falling apart, piece by piece.")
     print("A strange new 'red hole' has opened somewhere out in the cosmos, quietly erasing the code that holds reality together.")
     print("Languages grow simpler, memories fade, and entire systems vanish overnight. Nobody knows how to stop it.")
     print(f"But somehow, {name}, you’ve woken up in the middle of it all—with nothing but a letter and a few cryptic clues that might lead to the last surviving computers.")
     print("If there’s any hope left, the hope is you.")
-    input("\n\033[32mPress Enter\033[0m")
+    input("\n\033[32mPress Enter to continue...\033[0m")
     print("You need to find the computers at each airport to piece together the letter and remember who you are. Each computer you find will give you a part of the letter and a clue to the next location.")
     print("\nYour journey begins now...\n")
     input("\n\033[32mPress Enter to accept the mission...\033[0m")
@@ -207,7 +168,7 @@ def run_cli(db_conf):
     g["found"].add(start_ident)
 
 # Winning situation
-    def show_good_end(letter_parts):
+    def show_good(letter_parts):
         print("\n--- MISSION COMPLETE ---\n")
         time.sleep(1)
 
@@ -241,7 +202,7 @@ def run_cli(db_conf):
         time.sleep(1)
 
 # Losing situation
-    def show_bad_end(letter_parts):
+    def show_bad(letter_parts):
         print("\n--- TIME IS UP ---\n")
         time.sleep(1)
 
@@ -268,8 +229,7 @@ def run_cli(db_conf):
         print("He hands you a cone and smiles gently.")
         time.sleep(1)
 
-        print(
-            '"Sometimes," he says, "there are battles you can’t win no matter how hard you try. But even then… there’s beauty in small moments."')
+        print('"Sometimes," he says, "there are battles you can’t win no matter how hard you try. But even then… there’s beauty in small moments."')
         time.sleep(1)
 
         print("You take a bite, feeling the sweetness, and a quiet calm.")
@@ -310,7 +270,7 @@ def run_cli(db_conf):
             print("Invalid command.")
     if is_win(g):
         from Goodend import show_good_end
-        show_good_end(letter_parts)
+        show_good(letter_parts)
         show_good_end()
         show_full_letter()
         print("You have visited:")
@@ -318,7 +278,7 @@ def run_cli(db_conf):
             print("  " + fmt(g, ident))
     elif g["attempts_left"] <= 0:
         from Badend import show_bad_end
-        show_bad_end(letter_parts)
+        show_bad(letter_parts)
         show_bad_end()
     else:
         print(">>> GAME ENDED! <<<")
