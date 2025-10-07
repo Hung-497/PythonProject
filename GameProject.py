@@ -2,6 +2,17 @@ import mysql.connector
 import time
 import random
 
+connection = mysql.connector.connect(
+         host='127.0.0.1',
+         port= 3306,
+         database='demogame',
+         user='root',
+         password='Giahung@!497',
+         autocommit=True,
+         auth_plugin="mysql_native_password",
+         use_pure=True
+)
+
 # ---- Fixed airports, hints and letter parts ----
 FIXED_CODE_AIRPORTS = ["LIRF", "GCTS", "LFPG", "EHEH", "DDDF"]
 
@@ -20,17 +31,6 @@ letter_parts = {
     "EHEH": "to remember who you are.",
     "DDDF": "But don’t get too excited, since I tricked you; the secret base, the key, my password - remember?",
 }
-
-connection = mysql.connector.connect(
-         host='127.0.0.1',
-         port= 3306,
-         database='demogame',
-         user='root',
-         password='Giahung@!497',
-         autocommit=True,
-         auth_plugin="mysql_native_password",
-         use_pure=True
-)
 
 ## this is a function for defining random airports in r rows
 
