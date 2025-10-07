@@ -92,14 +92,6 @@ def show_letter_so_far(game):
     if parts:
         print("\n>>> Letter so far:\n" + " ".join(parts) + "\n")
 
-def show_full_letter():
-    print("\n>>> The letter is now complete: <<<\n")
-    for ident in FIXED_CODE_AIRPORTS:
-        part = letter_parts.get(ident, "")
-        if part:
-            print(part)
-    print("\n>>> End of letter <<<\n")
-
 def move(game, dest_ident):
     if dest_ident not in game["airports"]:
         return f"This airport {dest_ident} is not on the map!"
@@ -109,7 +101,6 @@ def move(game, dest_ident):
     game["attempts_left"] -= 1
     game["cur"] = dest_ident
     game["visited"].add(dest_ident)
-
     msg = f"You are now at {dest_ident} - {game['airports'][dest_ident]['name']} - {game['airports'][dest_ident]['municipality'] or ''}"
 
     # Reveal letter part for the special airport
@@ -118,8 +109,7 @@ def move(game, dest_ident):
         msg += f"\n\n>>> Letter fragment discovered:\n\"{part}\" <<<"
         hint = game["code_positions"].get(dest_ident, "")
         if hint:
-            msg += f"\n\n>>> A computer flickers and shows a clue:\n\"{hint}\" <<<"
-
+            msg += f"\n\n>>> A computer flickers:\n\"{hint}\" <<<"
         game["found"].add(dest_ident)
 
         # If all letter parts are found
@@ -129,8 +119,6 @@ def move(game, dest_ident):
 
 def is_win(game):
     return len(game["found"]) == len(FIXED_CODE_AIRPORTS)
-
-start = FIXED_CODE_AIRPORTS[0]
 
 def fmt(game, ident):
     row = game["airports"][ident]
@@ -152,20 +140,10 @@ def run_cli(db_conf):
     print("If there’s any hope left, the hope is you.")
     input("\n\033[32mPress Enter to continue...\033[0m")
     print("You need to find the computers at each airport to piece together the letter and remember who you are. Each computer you find will give you a part of the letter and a clue to the next location.")
-    print("\nYour journey begins now...\n")
+    print("Your journey begins now...")
     input("\n\033[32mPress Enter to accept the mission...\033[0m")
     print(f"{name}. You now are at {fmt(g, start_ident)}")
     print("Commands: list (show airports) | go <IDENT> | quit")
-
-
-    # Show first hint and letter part for starting airport
-    first_letter_part = letter_parts.get(start_ident, "")
-    first_hint = g["code_positions"].get(start_ident, "")
-    if first_letter_part:
-        print(f"\n>>> Letter fragment discovered:\n\"{first_letter_part}\" <<<")
-    if first_hint:
-        print(f"\n>>> The computer flickers with text:\n\"{first_hint}\" <<<")
-    g["found"].add(start_ident)
 
 # Winning situation
     def show_good(letter_parts):
@@ -181,7 +159,7 @@ def run_cli(db_conf):
         print("You caused the Red Death, but you are the only one who could fix it.")
         time.sleep(1)
 
-        print("\n>>> Letter reconstructed <<<\n")
+        print("\n>>> Letter is now completed <<<\n")
         time.sleep(1)
 
         # Show the letter gradually
@@ -199,6 +177,9 @@ def run_cli(db_conf):
         time.sleep(1)
 
         print("You have won not by reversing everything, but by understanding, remembering, and acting.")
+        time.sleep(1)
+
+        print("\n>>> End of letter <<<\n")
         time.sleep(1)
 
 # Losing situation
@@ -238,7 +219,6 @@ def run_cli(db_conf):
         print("On that bench, you rest, exhausted but alive.")
         time.sleep(1)
 
-
     # Main loop
     while not is_win(g) and g["attempts_left"] > 0:
         cur_ident = g["cur"]
@@ -247,7 +227,6 @@ def run_cli(db_conf):
         if not cmd:
             continue
         c = cmd[0].lower()
-
         if c == "list":
             remaining = []    # Build a list of unvisited airports
             for i in g["idents"]:
@@ -270,15 +249,14 @@ def run_cli(db_conf):
             print("Invalid command.")
     if is_win(g):
         from Goodend import show_good_end
-        show_good(letter_parts)
         show_good_end()
-        show_full_letter()
+        show_good(letter_parts)
         print("You have visited:")
         for ident in sorted(g["visited"]):
             print("  " + fmt(g, ident))
     elif g["attempts_left"] <= 0:
         from Badend import show_bad_end
-        show_bad(letter_parts)
         show_bad_end()
+        show_bad(letter_parts)
     else:
         print(">>> GAME ENDED! <<<")
