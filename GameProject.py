@@ -2,6 +2,25 @@ import mysql.connector
 import time
 import random
 
+# ---- Fixed airports, hints and letter parts ----
+FIXED_CODE_AIRPORTS = ["LIRF", "GCTS", "LFPG", "EHEH", "EDDF"]
+
+FIXED_HINTS = {
+    "LIRF": "Gelato can taste sweet. :)",
+    "GCTS": "Les Fleurs du Petit Garçon",
+    "LFPG": "Eheh :)",
+    "EHEH": "ERROR 504: Data packet lost  Driver mismatch detected  Database access denied   File structure corrupted",
+    # EDDF has no hint (final)
+}
+
+letter_parts = {
+    "LIRF": "You have a great chance to save the world.",
+    "GCTS": "Do what you can!",
+    "LFPG": "There are still computers left, scattered around the EU that can help you",
+    "EHEH": "to remember who you are.",
+    "EDDF": "But don’t get too excited, since I tricked you; the secret base, the key, my password - remember?",
+}
+
 connection = mysql.connector.connect(
          host='127.0.0.1',
          port= 3306,
@@ -12,25 +31,6 @@ connection = mysql.connector.connect(
          auth_plugin="mysql_native_password",
          use_pure=True
 )
-
-# ---- Fixed airports, hints and letter parts ----
-FIXED_CODE_AIRPORTS = ["LIRF", "GCTS", "LFPG", "EHEH", "DDDF"]
-
-FIXED_HINTS = {
-    "LIRF": "Gelato can taste sweet. :)",
-    "GCTS": "Les Fleurs du Petit Garçon",
-    "LFPG": "Eheh :)",
-    "EHEH": "ERROR 504: Data packet lost  Driver mismatch detected  Database access denied   File structure corrupted",
-    # DDDF has no hint (final)
-}
-
-letter_parts = {
-    "LIRF": "You have a great chance to save the world.",
-    "GCTS": "Do what you can.",
-    "LFPG": "There are still computers left, scattered around the EU that can help you",
-    "EHEH": "to remember who you are.",
-    "DDDF": "But don’t get too excited, since I tricked you; the secret base, the key, my password - remember?",
-}
 
 ## this is a function for defining random airports in r rows
 
@@ -63,14 +63,23 @@ def start_game(db_conf):
         "GCTS": "Tenerife",
         "LFPG": "Paris",
         "EHEH": "Eindhoven",
-        "DDDF": "Frankfurt"
+        "EDDF": "Frankfurt"
     }
-    idents = list(airport.keys()) #return a view of all the keys in the dict
-
+    fixed_name = {
+        "LIRF": "Rome–Fiumicino Leonardo da Vinci Interna",
+        "GCTS": "Tenerife Sur Airport",
+        "LFPG": "Charles de Gaulle International Airport",
+        "EHEH": "Eindhoven Airport",
+        "EDDF": "Frankfurt am Main Airport"
+    }
     # Ensure fixed airports are included
     for icao in FIXED_CODE_AIRPORTS:
-        if icao not in airport:
-            airport[icao] = {"ident": icao, "name": f"Special Airport {icao}", "municipality": ""}
+        airport[icao] = {
+            "ident": icao,
+            "name": fixed_name.get(icao, ""),
+            "municipality": fixed_municipalities.get(icao, "")
+        }
+    idents = list(airport)
 
     # Player state
     start = random.choice(idents)
@@ -114,7 +123,7 @@ def move(game, dest_ident):
 
         # If all letter parts are found
     if len(game["found"]) == len(FIXED_CODE_AIRPORTS):
-        msg += "\n>>> The letter is now complete! <<<\n"
+        msg += "\n\n>>> The letter is now complete! <<<"
     return msg
 
 def is_win(game):
@@ -232,9 +241,7 @@ def run_cli(db_conf):
             for i in g["idents"]:
                 if i not in g["visited"]:
                     remaining.append(i)
-
             count = len(remaining)
-
             if count > 0:
                 print(f"You only have {count} airports remaining:")
                 for ident in sorted(remaining): # show IDENT – NAME – MUNICIPALITY one per line
